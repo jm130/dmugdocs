@@ -1,12 +1,12 @@
 # Heriot-Watt Student Cluster User Guide
 
-Welcome to the Heriot-Watt Student Cluster! We're delighted to have you join our community of researchers and learners. This guide will help you get started with high-performance computing (HPC) on our cluster, from your first login to running complex simulations efficiently. Whether you're new to HPC or an experienced user, you'll find everything you need to make the most of this resource.
+Welcome to the Heriot-Watt Student Cluster! This guide will help you get started with high-performance computing (HPC) on our cluster, from your first login to running complex simulations efficiently. Whether you're new to HPC or an experienced user, you'll find everything you need to make the most of this resource.
 
 ---
 
 ## 0. The Workflow at a Glance
 
-To ensure the cluster remains fast for everyone, we follow a specific data lifecycle. **Do not run simulations directly in your `/home` directory.**
+To ensure the cluster remains fast for everyone, we follow a specific data lifecycle. **We strongly discouraged to run simulations directly in your `/home` directory.**
 
 ```text
 [ Your Laptop ] 
@@ -39,7 +39,7 @@ To ensure the cluster remains fast for everyone, we follow a specific data lifec
 ### On-Campus Access
 If you are on the university network, you can access the cluster directly via SSH:
 ```bash
-ssh <your_username>@<cluster_hostname>
+ssh <your_username>@dmug.hw.ac.uk 
 ```
 
 ### Remote Access (Off-Campus)
@@ -48,7 +48,6 @@ If you are accessing the cluster from home or another external network, you **mu
 
 **Important**: Before using the SSH gateway, you need to:
 1. Request access via **[ISHelp@hw.ac.uk](mailto:ISHelp@hw.ac.uk)**
-2. Set up Multi-Factor Authentication (MFA) for your account
 
 Once access is granted:
 
@@ -99,7 +98,7 @@ While there are currently no strict storage quotas enforced on the cluster, plea
 
 ### The Golden Rule: Use Local Disks for Computation
 
-Running simulations directly in your `/home` directory is **extremely inefficient**. The `/home` directory is a network-mounted filesystem, and high-frequency reads/writes can slow down the entire cluster.
+Running simulations directly in your `/home` directory is **inefficient**. The `/home` directory is a network-mounted filesystem, and high-frequency reads/writes can slow down the entire cluster.
 
 **For maximum performance, always run your simulations using the node's local disk.**
 
@@ -110,7 +109,7 @@ Running simulations directly in your `/home` directory is **extremely inefficien
 Use `rsync` from your **local machine** to upload data to your cluster home directory:
 ```bash
 # Copy a folder from your laptop to the cluster (on-campus)
-rsync -avz ./my_project <your_username>@<cluster_hostname>:/home/<your_username>/
+rsync -avz ./my_project <your_username>@dmug.hw.ac.uk:/home/<your_username>/
 ```
 
 **Downloading Data from the Cluster:**
@@ -119,12 +118,12 @@ To retrieve your results, use `scp` or `rsync` to download files. When off-campu
 
 ```bash
 # Download from cluster (on-campus direct access)
-rsync -avz <your_username>@<cluster_hostname>:/home/<your_username>/results/ ./local_results/
+rsync -avz <your_username>@dmug.hw.ac.uk:/home/<your_username>/results/ ./local_results/
 
 # Download via SSH gateway (off-campus) - use ProxyCommand or SSH config
 # Option 1: Using SSH config (~/.ssh/config)
 Host cluster
-    HostName <cluster_hostname>
+    HostName dmug.hw.ac.uk
     User <your_username>
     ProxyCommand ssh -p 44788 %r@sshgw.hw.ac.uk -W %h:%p
 

@@ -1,6 +1,6 @@
 # Heriot-Watt Student Cluster User Guide
 
-Welcome to the Heriot-Watt student cluster. This guide is designed to help you transition from your local machine to running high-performance computing (HPC) jobs on this cluster.
+Welcome to the Heriot-Watt Student Cluster! We're delighted to have you join our community of researchers and learners. This guide will help you get started with high-performance computing (HPC) on our cluster, from your first login to running complex simulations efficiently. Whether you're new to HPC or an experienced user, you'll find everything you need to make the most of this resource.
 
 ---
 
@@ -43,10 +43,18 @@ ssh <your_username>@<cluster_hostname>
 ```
 
 ### Remote Access (Off-Campus)
+
 If you are accessing the cluster from home or another external network, you **must** connect through our **SSH Gateway** first.
-1. Connect to the gateway:
+
+**Important**: Before using the SSH gateway, you need to:
+1. Request access via **[ISHelp@hw.ac.uk](mailto:ISHelp@hw.ac.uk)**
+2. Set up Multi-Factor Authentication (MFA) for your account
+
+Once access is granted:
+
+1. Connect to the gateway (note the non-standard port 44788):
    ```bash
-   ssh <your_username>@<gateway_address>
+   ssh -p 44788 <your_username>@sshgw.hw.ac.uk
    ```
 2. From the gateway, SSH into the cluster:
    ```bash
@@ -66,25 +74,65 @@ When you first connect, you are on the **Login Node**.
 We use the `module` system to manage software. This allows you to load different versions of compilers, libraries, and tools without them conflicting.
 
 *   **`module avail`**: Lists all software currently available to you.
-*   **`module load <module_name>`**: Loads a specific software package (e.g., `module load python/3.10`).
+*   **`module load <module_name>`**: Loads a specific software package (e.g., `module load scalapack/2.2.3`).
 *   **`module list`**: Shows which modules you currently have loaded.
 *   **`module purge`**: Removes all currently loaded modules (useful for starting fresh).
+
+### Installing New Software
+
+You have two options for adding new software to your environment:
+
+1. **Local Installation (User Space)**: You can install software in your own user directory without requiring root access. This is the recommended approach for individual tools and dependencies. Simply download and compile software with a prefix pointing to your home directory (e.g., `./configure --prefix=$HOME/local`).
+
+2. **System-Wide Installation**: If you'd like software to be available to all cluster users, please contact **[ISHelp@hw.ac.uk](mailto:ISHelp@hw.ac.uk)** with details of the software and its version. Our team will evaluate and install it system-wide.
 
 ---
 
 ## 3. Data Management & Performance
 
+### Storage Quotas
+
+While there are currently no strict storage quotas enforced on the cluster, please remember that this is a **shared resource**. Be considerate of other users by:
+- Regularly cleaning up completed job outputs you no longer need
+- Archiving old projects to external storage
+- Avoiding unnecessary duplication of large files
+
 ### The Golden Rule: Use Local Disks for Computation
+
 Running simulations directly in your `/home` directory is **extremely inefficient**. The `/home` directory is a network-mounted filesystem, and high-frequency reads/writes can slow down the entire cluster.
 
 **For maximum performance, always run your simulations using the node's local disk.**
 
 ### Recommended Data Transfer
+
+**Uploading Data to the Cluster:**
+
 Use `rsync` from your **local machine** to upload data to your cluster home directory:
 ```bash
-# Copy a folder from your laptop to the cluster
+# Copy a folder from your laptop to the cluster (on-campus)
 rsync -avz ./my_project <your_username>@<cluster_hostname>:/home/<your_username>/
 ```
+
+**Downloading Data from the Cluster:**
+
+To retrieve your results, use `scp` or `rsync` to download files. When off-campus, connect through the SSH gateway first:
+
+```bash
+# Download from cluster (on-campus direct access)
+rsync -avz <your_username>@<cluster_hostname>:/home/<your_username>/results/ ./local_results/
+
+# Download via SSH gateway (off-campus) - use ProxyCommand or SSH config
+# Option 1: Using SSH config (~/.ssh/config)
+Host cluster
+    HostName <cluster_hostname>
+    User <your_username>
+    ProxyCommand ssh -p 44788 %r@sshgw.hw.ac.uk -W %h:%p
+
+# Then simply:
+rsync -avz cluster:/home/<your_username>/results/ ./local_results/
+```
+
+For easier off-campus access, we recommend setting up an SSH config file at `~/.ssh/config` with the gateway proxy settings.
 
 ---
 

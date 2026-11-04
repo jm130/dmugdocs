@@ -164,7 +164,7 @@ trap 'rm -rf "$LOCAL_DIR"; exit' EXIT  # Ensure cleanup happens on exit/error
 
 # 1. Load necessary modules
 module purge
-module load python/3.10
+module load scalapack/2.2.3
 
 # 2. Setup local workspace (Performance!)
 LOCAL_DIR="/tmp/job_$SLURM_JOB_ID"
@@ -234,6 +234,39 @@ srun --partition=nodes --cpus-per-task=2 --mem=4G --pty bash
 *   **`squeue`**: Check the status of your jobs.
 *   **`sinfo`**: Check which nodes/partitions are available.
 *   **`scancel <job_id>`**: Stop a job that is running too long or is broken.
+*   **`list_nodes`**: View detailed information about all compute nodes (custom command).
+
+### Cluster Topology
+
+The cluster consists of CPU and GPU compute nodes. The node configuration may change regularly as resources are added or maintained. Use the `list_nodes` command to see the current status:
+
+```bash
+list_nodes
+```
+
+This will display output similar to:
+
+```
+NODELIST                                STATE       REASON                        CPUS S:C:T   MEMORY    AVAIL_FEATURES                          GRES                NODE_ADDR           TIMESTAMP
+node01                                  idle        none                          32   2:8:2   191000    (null)                      (null)              node01              Unknown
+node02                                  idle        none                          32   2:8:2   191000    (null)                      (null)              node02              Unknown
+node03                                  idle        none                          32   2:8:2   191000    (null)                      (null)              node03              Unknown
+node04                                  idle        none                          32   2:8:2   191000    (null)                      (null)              node04              Unknown
+node11                                  idle        none                          48   2:12:2  257000    (null)                      (null)              node11              Unknown
+node12                                  idle        none                          48   2:12:2  225000    (null)                      (null)              node12              Unknown
+gpu01                                   idle        none                          28   1:14:2  63000     (null)                      gpu:4               gpu01               Unknown
+gpu02                                   idle        none                          28   1:14:2  63000     (null)                      gpu:4               gpu02               Unknown
+```
+
+**Node Specifications:**
+
+| Node Type | CPUs | Socket:Core:Thread | Memory (MB) | GPUs | GPU Model |
+|-----------|------|-------------------|-------------|------|-----------|
+| Standard (node01-04) | 32 | 2:8:2 | ~191 GB | - | - |
+| High-CPU (node11-12) | 48 | 2:12:2 | ~225-257 GB | - | - |
+| GPU Nodes (gpu01-02) | 28 | 1:14:2 | ~63 GB | 4 | NVIDIA RTX 2080 Ti |
+
+**Note**: The list of available nodes is expected to change regularly. Always use `list_nodes` to check current availability before submitting jobs.
 
 ### Troubleshooting FAQ
 *   **"My job is stuck in PD (Pending) state"**

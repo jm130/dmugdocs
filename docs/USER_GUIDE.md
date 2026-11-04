@@ -1,6 +1,6 @@
-# Student Cluster User Guide
+# Heriot-Watt Student Cluster User Guide
 
-Welcome to the student cluster. This guide is designed to help you transition from your local machine to running high-performance computing (HPC) jobs on this cluster.
+Welcome to the Heriot-Watt student cluster. This guide is designed to help you transition from your local machine to running high-performance computing (HPC) jobs on this cluster.
 
 ---
 

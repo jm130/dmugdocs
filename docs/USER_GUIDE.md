@@ -143,6 +143,80 @@ We use **Slurm** to manage job scheduling and resource allocation.
 1.  **`nodes`**: For standard CPU-intensive tasks.
 2.  **`gpu`**: For tasks requiring GPU acceleration.
 
+---
+
+## 4.1 GPU Job Resource Policy
+
+GPU nodes are shared between jobs to maximise use of the available GPUs, CPUs and memory. Each GPU node has **4 GPUs**, **28 CPU cores** and approximately **63 GB RAM**.
+
+Jobs submitted to the `gpu` partition must explicitly request at least one GPU using `--gres=gpu:N`.
+
+### Resource Limits
+
+For each GPU requested, a job may request up to:
+- **7 CPU cores** per GPU
+- **32 GiB RAM** per GPU
+
+| GPUs Requested | Max CPUs | Max RAM |
+|----------------|----------|---------|
+| 1 GPU | 7 | 32 GiB |
+| 2 GPUs | 14 | 64 GiB* |
+| 3 GPUs | 21 | 96 GiB* |
+| 4 GPUs | 28 | 128 GiB* |
+
+*Physical node memory (63 GB) remains the ultimate limit.
+
+These limits prevent a job using a single GPU from reserving all of the node's CPU or memory, which would make the remaining GPUs unavailable to other users.
+
+### Examples
+
+**A typical GPU job might request:**
+```bash
+srun -p gpu \
+  --gres=gpu:1 \
+  --cpus-per-task=4 \
+  --mem=16G \
+  hostname
+```
+
+**Maximum allowed for a one-GPU job:**
+```bash
+--gres=gpu:1 --cpus-per-task=7 --mem=32G
+```
+
+**These requests will be REJECTED:**
+```bash
+# Too many CPUs for 1 GPU
+--gres=gpu:1 --cpus-per-task=8
+
+# Too much memory for 1 GPU
+--gres=gpu:1 --mem=40G
+```
+
+### Using `--mem-per-cpu`
+
+Be careful when using `--mem-per-cpu`, as this value is multiplied by the number of CPUs requested.
+
+**This is allowed (4 CPUs × 8 GiB = 32 GiB):**
+```bash
+--gres=gpu:1 --cpus-per-task=4 --mem-per-cpu=8G
+```
+
+**This will be REJECTED (7 CPUs × 8 GiB = 56 GiB, exceeds 32 GiB limit):**
+```bash
+--gres=gpu:1 --cpus-per-task=7 --mem-per-cpu=8G
+```
+
+### Why We Do This
+
+The GPU nodes are configured so that several jobs can run simultaneously on the same node while using different GPUs, CPU cores and memory.
+
+Accurate resource requests allow Slurm to make the unused resources available to other jobs rather than leaving GPUs idle simply because another job has unnecessarily reserved all of the CPU cores or memory.
+
+**Please request only the resources your workload needs.** This improves GPU utilisation, reduces unnecessary queueing and makes the cluster more readily available to everyone.
+
+---
+
 ### Batch Jobs (`sbatch`)
 For most work, you will create a shell script and submit it using `sbatch`. The templates below include **safety features**: they use `set -e` to stop on errors and `trap` to ensure local temporary files are cleaned up even if the job fails.
 
@@ -184,6 +258,9 @@ rsync -a "$LOCAL_DIR/output/" "$SLURM_SUBMIT_DIR/results/"
 **Submit it with:** `sbatch cpu_job.sh`
 
 #### **Template 2: GPU Job**
+
+**Important**: See the [GPU Job Resource Policy](#41-gpu-job-resource-policy) section above for resource limits. Each GPU allows up to 7 CPUs and 32 GiB RAM.
+
 Save this as `gpu_job.sh`:
 ```bash
 #!/bin/bash

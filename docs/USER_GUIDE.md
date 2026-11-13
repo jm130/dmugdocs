@@ -145,7 +145,26 @@ We use **Slurm** to manage job scheduling and resource allocation.
 
 ---
 
-## 4.1 GPU Job Resource Policy
+## 4.1 User Account Limits
+
+The cluster uses Slurm's fair-share accounting (`cgroup` backend) to enforce per-user resource limits. All student accounts have the following default maximums:
+
+| Resource | Limit |
+|----------|-------|
+| CPU cores | 64 |
+| GPUs | 2 |
+| Memory | 128 GB |
+
+These limits apply per job. If you need higher limits for your research, please contact **[ISHelp@hw.ac.uk](mailto:ISHelp@hw.ac.uk)** with details of your workload requirements.
+
+Check your current account limits with:
+```bash
+sacctmgr show accounts where Name='students' format=Name,DefaultCpusPerJob,DefaultGresPerJob,DefaultMemPerJob
+```
+
+---
+
+## 4.2 GPU Job Resource Policy
 
 GPU nodes are shared between jobs to maximise use of the available GPUs, CPUs and memory. Each GPU node has **4 GPUs**, **28 CPU cores** and approximately **63 GB RAM**.
 
@@ -306,11 +325,105 @@ srun --partition=nodes --cpus-per-task=2 --mem=4G --pty bash
 
 ## 5. Monitoring & Troubleshooting
 
-### Common Commands
-*   **`squeue`**: Check the status of your jobs.
-*   **`sinfo`**: Check which nodes/partitions are available.
-*   **`scancel <job_id>`**: Stop a job that is running too long or is broken.
-*   **`list_nodes`**: View detailed information about all compute nodes (custom command).
+### Job Status Commands
+
+| Command | Description |
+|---------|-------------|
+| `squeue -u $USER` | Check the status of **your** jobs (recommended) |
+| `squeue --jobs=<job_id>` | View details for a specific job |
+| `sinfo` | Check which nodes/partitions are available |
+| `sinfo -p gpu` | Check GPU partition status specifically |
+| `sinfo -s` | Compact summary of all partitions |
+
+### Job Accounting & History
+
+Use `sacct` (Slurm Accounting) to inspect completed jobs, see actual resource usage, and diagnose failures:
+
+```bash
+# View your recent job history with key metrics
+sacct -u $USER --format=JobID,JobName,Partition,State,Elapsed,AllocCPUS,MaxRSS
+
+# Check a specific job's actual runtime and memory usage
+sacct -j <job_id> --format=JobID,JobName,State,Elapsed,AllocCPUS,MaxRSS,ExitCode
+
+# Simple recent jobs list
+sacct -u $USER -n --parsable2
+```
+
+**Understanding Exit Codes:**
+- `0:0` - Job completed successfully
+- `1:0` to `255:0` - Failed (check output file for error details)
+- `0:1` - Job cancelled by user (`scancel`) or administrator
+- `0:7` - Job terminated due to time limit
+
+### Job Management Commands
+
+| Command | Description |
+|---------|-------------|
+| `scancel <job_id>` | Cancel a running or queued job |
+| `scontrol requeue <job_id>` | Restart a failed job without resubmitting (useful for transient failures) |
+| `scontrol show job <job_id>` | Display detailed job information including resource allocations |
+
+### Array Jobs (Parameter Sweeps)
+
+For running the same script with different parameters, use **array jobs**. This is more efficient than submitting many individual jobs:
+
+**Example array job script** (`parameter_sweep.sh`):
+```bash
+#!/bin/bash
+#SBATCH --job-name=param_sweep
+#SBATCH --partition=nodes
+#SBATCH --array=1-10          # Create 10 tasks (IDs 1 through 10)
+#SBATCH --cpus-per-task=2
+#SBATCH --mem=4G
+#SBATCH --time=01:00:00
+#SBATCH --output=sweep_%A_%a.out  # %A = array job ID, %a = array task ID
+
+# Access the current task ID
+echo "Running task: $SLURM_ARRAY_TASK_ID"
+
+# Use the task ID to select different parameters
+PARAM=$((SLURM_ARRAY_TASK_ID))
+python my_simulation.py --param $PARAM
+```
+
+**Submit and monitor array jobs:**
+```bash
+# Submit the array job
+sbatch parameter_sweep.sh
+
+# Check all array tasks
+squeue -u $USER
+
+# Cancel specific array tasks
+scancel <array_job_id>_1,<array_job_id>_3  # Cancel tasks 1 and 3
+scancel <array_job_id>                     # Cancel entire array
+```
+
+**Useful array options:**
+- `--array=1-10` - Tasks numbered 1 to 10
+- `--array=1-100%5` - 100 tasks, max 5 running at once (rate limiting)
+- `--array=1,3,5-10,15` - Specific task IDs
+
+### Job Dependencies
+
+Run jobs only after others complete successfully:
+
+```bash
+#!/bin/bash
+#SBATCH --job-name=dependent_job
+#SBATCH --dependency=afterok:<previous_job_id>  # Run after job succeeds
+#
+#SBATCH --partition=nodes
+...
+```
+
+**Dependency types:**
+- `afterok` - Run when all previous jobs completed successfully
+- `afterany` - Run when all previous jobs finished (regardless of success)
+- `afternotok` - Run when any previous job failed
+
+---
 
 ### Cluster Topology
 

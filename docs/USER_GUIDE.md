@@ -443,17 +443,24 @@ node03                                  idle        none                        
 node04                                  idle        none                          32   2:8:2   191000    (null)                      (null)              node04              Unknown
 node11                                  idle        none                          48   2:12:2  257000    (null)                      (null)              node11              Unknown
 node12                                  idle        none                          48   2:12:2  225000    (null)                      (null)              node12              Unknown
+node13                                  idle        none                          48   2:12:2  257000    (null)                      (null)              node13              Unknown
+node14                                  idle        none                          48   2:12:2  257000    (null)                      (null)              node14              Unknown
+node15                                  idle        none                          48   2:12:2  257000    (null)                      (null)              node15              Unknown
 gpu01                                   idle        none                          28   1:14:2  63000     (null)                      gpu:4               gpu01               Unknown
 gpu02                                   idle        none                          28   1:14:2  63000     (null)                      gpu:4               gpu02               Unknown
 ```
 
 **Node Specifications:**
 
-| Node Type | CPUs | Socket:Core:Thread | Memory (MB) | GPUs | GPU Model |
-|-----------|------|-------------------|-------------|------|-----------|
-| Standard (node01-04) | 32 | 2:8:2 | ~191 GB | - | - |
-| High-CPU (node11-12) | 48 | 2:12:2 | ~225-257 GB | - | - |
-| GPU Nodes (gpu01-02) | 28 | 1:14:2 | ~63 GB | 4 | NVIDIA RTX 2080 Ti |
+| Node Type | Nodes | CPUs | Socket:Core:Thread | Memory (MB) | GPUs | GPU Model |
+|-----------|-------|------|-------------------|-------------|------|-----------|
+| Standard | node01-04 | 32 | 2:8:2 | ~191 GB | - | - |
+| High-CPU | node11-15 | 48 | 2:12:2 | ~225-257 GB | - | - |
+| GPU Nodes | gpu01-02 | 28 | 1:14:2 | ~63 GB | 4 | NVIDIA RTX 2080 Ti |
+
+**Total Cluster Resources:**
+- **CPU Cores:** ~296 cores (5 standard + 5 high-CPU nodes)
+- **GPU Cores:** 8 GPUs across 2 nodes
 
 **Note**: The list of available nodes is expected to change regularly. Always use `list_nodes` to check current availability before submitting jobs.
 

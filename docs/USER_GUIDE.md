@@ -455,7 +455,7 @@ gpu02                                   idle        none                        
 | Node Type | Nodes | CPUs | Socket:Core:Thread | Memory (MB) | GPUs | GPU Model |
 |-----------|-------|------|-------------------|-------------|------|-----------|
 | Standard | node01-04 | 32 | 2:8:2 | ~191 GB | - | - |
-| High-CPU | node11-15 | 48 | 2:12:2 | ~225-257 GB | - | - |
+| High-CPU | node11-15 | 48 | 2:12:2 | ~225-250 GB | - | - |
 | GPU Nodes | gpu01-02 | 28 | 1:14:2 | ~63 GB | 4 | NVIDIA RTX 2080 Ti |
 
 **Total Cluster Resources:**

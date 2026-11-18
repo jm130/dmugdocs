@@ -441,11 +441,11 @@ node01                                  idle        none                        
 node02                                  idle        none                          32   2:8:2   191000    (null)                      (null)              node02              Unknown
 node03                                  idle        none                          32   2:8:2   191000    (null)                      (null)              node03              Unknown
 node04                                  idle        none                          32   2:8:2   191000    (null)                      (null)              node04              Unknown
-node11                                  idle        none                          48   2:12:2  257000    (null)                      (null)              node11              Unknown
+node11                                  idle        none                          48   2:12:2  250000    (null)                      (null)              node11              Unknown
 node12                                  idle        none                          48   2:12:2  225000    (null)                      (null)              node12              Unknown
-node13                                  idle        none                          48   2:12:2  257000    (null)                      (null)              node13              Unknown
-node14                                  idle        none                          48   2:12:2  257000    (null)                      (null)              node14              Unknown
-node15                                  idle        none                          48   2:12:2  257000    (null)                      (null)              node15              Unknown
+node13                                  idle        none                          48   2:12:2  250000    (null)                      (null)              node13              Unknown
+node14                                  idle        none                          48   2:12:2  250000    (null)                      (null)              node14              Unknown
+node15                                  idle        none                          48   2:12:2  250000    (null)                      (null)              node15              Unknown
 gpu01                                   idle        none                          28   1:14:2  63000     (null)                      gpu:4               gpu01               Unknown
 gpu02                                   idle        none                          28   1:14:2  63000     (null)                      gpu:4               gpu02               Unknown
 ```

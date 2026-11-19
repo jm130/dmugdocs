@@ -448,6 +448,7 @@ node14                                  idle        none                        
 node15                                  idle        none                          48   2:12:2  250000    (null)                      (null)              node15              Unknown
 gpu01                                   idle        none                          28   1:14:2  63000     (null)                      gpu:4               gpu01               Unknown
 gpu02                                   idle        none                          28   1:14:2  63000     (null)                      gpu:4               gpu02               Unknown
+gpu03                                   idle        none                          28   1:14:2  63000     (null)                      gpu:4               gpu03               Unknown
 ```
 
 **Node Specifications:**
@@ -456,11 +457,11 @@ gpu02                                   idle        none                        
 |-----------|-------|------|-------------------|-------------|------|-----------|
 | Standard | node01-04 | 32 | 2:8:2 | ~191 GB | - | - |
 | High-CPU | node11-15 | 48 | 2:12:2 | ~225-250 GB | - | - |
-| GPU Nodes | gpu01-02 | 28 | 1:14:2 | ~63 GB | 4 | NVIDIA RTX 2080 Ti |
+| GPU Nodes | gpu01-03 | 28 | 1:14:2 | ~63 GB | 4 | NVIDIA RTX 2080 Ti |
 
 **Total Cluster Resources:**
-- **CPU Cores:** ~296 cores (5 standard + 5 high-CPU nodes)
-- **GPU Cores:** 8 GPUs across 2 nodes
+- **CPU Cores:** ~296 cores (4 standard + 5 high-CPU nodes)
+- **GPU Cores:** 12 GPUs across 3 nodes
 
 **Note**: The list of available nodes is expected to change regularly. Always use `list_nodes` to check current availability before submitting jobs.
 

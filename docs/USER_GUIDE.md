@@ -166,7 +166,9 @@ sacctmgr show accounts where Name='students' format=Name,DefaultCpusPerJob,Defau
 
 ## 4.2 GPU Job Resource Policy
 
-GPU nodes are shared between jobs to maximise use of the available GPUs, CPUs and memory. Each GPU node has **4 GPUs**, **28 CPU cores** and approximately **63 GB RAM**.
+GPU nodes are shared between jobs to maximise use of the available GPUs, CPUs and memory. Each GPU node has **4 GPUs** and **28 CPU cores**. Memory varies by node:
+- **gpu01, gpu02**: ~63 GB RAM
+- **gpu03**: ~128 GB RAM
 
 Jobs submitted to the `gpu` partition must explicitly request at least one GPU using `--gres=gpu:N`.
 
@@ -179,13 +181,14 @@ For each GPU requested, a job may request up to:
 | GPUs Requested | Max CPUs | Max RAM |
 |----------------|----------|---------|
 | 1 GPU | 7 | 32 GiB |
-| 2 GPUs | 14 | 64 GiB* |
+| 2 GPUs | 14 | 64 GiB |
 | 3 GPUs | 21 | 96 GiB* |
 | 4 GPUs | 28 | 128 GiB* |
 
-*Physical node memory (63 GB) remains the ultimate limit.
-
-These limits prevent a job using a single GPU from reserving all of the node's CPU or memory, which would make the remaining GPUs unavailable to other users.
+**Notes:**
+- Jobs requesting **≤64 GiB** can run on any GPU node (gpu01, gpu02, or gpu03)
+- Jobs requesting **>64 GiB** will only run on gpu03 (128 GB RAM)
+- The per-GPU limits still apply regardless of which node your job runs on
 
 ### Examples
 
@@ -448,7 +451,7 @@ node14                                  idle        none                        
 node15                                  idle        none                          48   2:12:2  250000    (null)                      (null)              node15              Unknown
 gpu01                                   idle        none                          28   1:14:2  63000     (null)                      gpu:4               gpu01               Unknown
 gpu02                                   idle        none                          28   1:14:2  63000     (null)                      gpu:4               gpu02               Unknown
-gpu03                                   idle        none                          28   1:14:2  63000     (null)                      gpu:4               gpu03               Unknown
+gpu03                                   idle        none                          28   1:14:2  128000    (null)                      gpu:4               gpu03               Unknown
 ```
 
 **Node Specifications:**
@@ -457,7 +460,8 @@ gpu03                                   idle        none                        
 |-----------|-------|------|-------------------|-------------|------|-----------|
 | Standard | node01-04 | 32 | 2:8:2 | ~191 GB | - | - |
 | High-CPU | node11-15 | 48 | 2:12:2 | ~225-250 GB | - | - |
-| GPU Nodes | gpu01-03 | 28 | 1:14:2 | ~63 GB | 4 | NVIDIA RTX 2080 Ti |
+| GPU Nodes | gpu01-02 | 28 | 1:14:2 | ~63 GB | 4 | NVIDIA RTX 2080 Ti |
+| GPU Node (High-RAM) | gpu03 | 28 | 1:14:2 | ~128 GB | 4 | NVIDIA RTX 2080 Ti |
 
 **Total Cluster Resources:**
 - **CPU Cores:** ~296 cores (4 standard + 5 high-CPU nodes)
